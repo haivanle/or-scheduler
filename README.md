@@ -75,7 +75,7 @@ To enable writing confirmed bookings back to your sheet and sending email report
 
 1. Open your Google Sheet → **Extensions → Apps Script**
 2. Delete any existing code and paste the script below
-3. Replace `YOUR_SECRET_TOKEN_HERE` with a secret string of your choice (e.g. `amelia2025`)
+3. Replace `YOUR_SECRET_TOKEN_HERE` with a secret string of your choice (e.g. `abcxyz`)
 4. Click **Deploy → New deployment**
    - Type: **Web app**
    - Execute as: **Me**
