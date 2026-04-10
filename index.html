@@ -6,62 +6,126 @@
 <title>OR Scheduling Optimizer</title>
 <style>
   :root {
-    --bg: #0f1117;
-    --bg2: #161b27;
-    --bg3: #1e2535;
-    --border: rgba(255,255,255,0.08);
-    --border2: rgba(255,255,255,0.14);
-    --text: #e8eaf0;
-    --text2: #8c92a8;
-    --text3: #555c75;
-    --teal: #2dd4bf;
-    --teal-dim: rgba(45,212,191,0.12);
-    --teal-mid: rgba(45,212,191,0.25);
-    --amber: #fbbf24;
-    --amber-dim: rgba(251,191,36,0.12);
-    --coral: #f87171;
-    --coral-dim: rgba(248,113,113,0.12);
-    --blue: #60a5fa;
-    --blue-dim: rgba(96,165,250,0.12);
-    --green: #4ade80;
-    --green-dim: rgba(74,222,128,0.12);
-    --purple: #a78bfa;
-    --purple-dim: rgba(167,139,250,0.12);
+    --bg: #f5f6f7;
+    --bg2: #ffffff;
+    --bg3: #f2f4f5;
+    --border: #e5e8ea;
+    --border2: #d2d5d6;
+    --text: #1f2937;
+    --text2: #536063;
+    --text3: #7b8488;
+    --teal: #25a3d9;
+    --teal-dim: rgba(37,163,217,0.12);
+    --teal-mid: rgba(37,163,217,0.24);
+    --amber: #b45309;
+    --amber-dim: rgba(180,83,9,0.12);
+    --coral: #dc2626;
+    --coral-dim: rgba(220,38,38,0.12);
+    --blue: #2563eb;
+    --blue-dim: rgba(37,99,235,0.12);
+    --green: #15803d;
+    --green-dim: rgba(21,128,61,0.12);
+    --purple: #7c3aed;
+    --purple-dim: rgba(124,58,237,0.12);
     --r: 8px;
     --r2: 12px;
+    --shadow-soft: 0 8px 20px rgba(15, 23, 42, 0.08);
+    --shadow-hover: 0 12px 26px rgba(15, 23, 42, 0.12);
+    /* Figma DS (Select node 384:657) */
+    --ds-field-bg: #f2f4f5;
+    --ds-field-border: #d2d5d6;
+    --ds-field-text: #4a4b4b;
+    --ds-field-placeholder: #536063;
+    --ds-field-focus: #25a3d9;
+    --ds-field-error: #fef2f2;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: var(--bg); color: var(--text); font-family: 'Inter', -apple-system, sans-serif; min-height: 100vh; }
+  body { background: var(--bg); color: var(--text); font-family: "Outfit", "Inter", -apple-system, sans-serif; min-height: 100vh; }
 
   /* Layout */
   .app { display: flex; flex-direction: column; min-height: 100vh; }
-  .topbar { background: var(--bg2); border-bottom: 1px solid var(--border); padding: 0 24px; display: flex; align-items: center; justify-content: space-between; height: 56px; position: sticky; top: 0; z-index: 100; }
+  .topbar {
+    background: rgba(255,255,255,.92);
+    border-bottom: 1px solid var(--border2);
+    backdrop-filter: blur(10px);
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
   .logo { font-size: 15px; font-weight: 600; letter-spacing: -.3px; display: flex; align-items: center; gap: 8px; }
   .logo-dot { width: 8px; height: 8px; background: var(--teal); border-radius: 50%; }
   .tabs { display: flex; gap: 4px; }
   .tab { padding: 6px 16px; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; border: none; background: transparent; color: var(--text2); transition: all .15s; }
   .tab:hover { background: var(--bg3); color: var(--text); }
-  .tab.active { background: var(--teal-dim); color: var(--teal); }
-  .main { flex: 1; padding: 28px 24px; max-width: 1280px; margin: 0 auto; width: 100%; }
+  .tab.active { background: var(--teal-dim); color: var(--teal); border: 1px solid rgba(37,163,217,.25); }
+  .main { flex: 1; padding: 34px 24px; max-width: 1280px; margin: 0 auto; width: 100%; }
   .page { display: none; }
   .page.active { display: block; }
 
   /* Config page */
   .config-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px; }
-  .card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--r2); padding: 20px; }
+  .card {
+    background: var(--bg2);
+    border: 1px solid var(--border2);
+    border-radius: var(--r2);
+    padding: 22px;
+    box-shadow: var(--shadow-soft);
+  }
   .card-title { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .8px; color: var(--text2); margin-bottom: 16px; }
   label { font-size: 13px; color: var(--text2); display: block; margin-bottom: 6px; margin-top: 14px; }
   label:first-of-type { margin-top: 0; }
   input[type=text], input[type=password], select {
-    width: 100%; padding: 9px 12px; background: var(--bg3); border: 1px solid var(--border); border-radius: var(--r);
-    color: var(--text); font-size: 13px; outline: none; transition: border .15s;
+    width: 100%;
+    min-height: 44px;
+    padding: 8px 12px;
+    background: var(--ds-field-bg);
+    border: 1px solid var(--ds-field-border);
+    border-radius: var(--r);
+    color: var(--ds-field-text);
+    font-size: 16px;
+    line-height: 24px;
+    outline: none;
+    transition: border-color .15s, box-shadow .15s, background-color .15s;
   }
-  input[type=text]:focus, input[type=password]:focus, select:focus { border-color: var(--teal); }
-  .btn { padding: 9px 20px; border-radius: var(--r); font-size: 13px; font-weight: 500; cursor: pointer; border: none; transition: all .15s; }
-  .btn-primary { background: var(--teal); color: #0f1117; }
-  .btn-primary:hover { background: #22c4ac; }
+  input[type=text]::placeholder, input[type=password]::placeholder { color: var(--ds-field-placeholder); }
+  input[type=text]:focus, input[type=password]:focus, select:focus {
+    border-color: var(--ds-field-focus);
+    box-shadow: 0 0 0 2px var(--ds-field-focus);
+    background: #fff;
+  }
+  input[type=text]:disabled, input[type=password]:disabled, select:disabled {
+    opacity: .4;
+    background: var(--ds-field-bg);
+    border-color: var(--ds-field-border);
+    color: var(--ds-field-border);
+  }
+  input.error, select.error {
+    background: var(--ds-field-bg);
+    border-color: var(--ds-field-error);
+    box-shadow: 0 0 0 2px var(--ds-field-focus);
+  }
+  .btn {
+    padding: 9px 20px;
+    border-radius: var(--r);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all .15s;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, #25a3d9 0%, #1c90c1 100%);
+    color: #ffffff;
+    box-shadow: 0 6px 16px rgba(37,163,217,.22);
+  }
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 10px 20px rgba(37,163,217,.3); }
   .btn-primary:disabled { opacity: .4; cursor: not-allowed; }
-  .btn-ghost { background: transparent; border: 1px solid var(--border2); color: var(--text2); }
+  .btn-ghost { background: var(--bg2); border: 1px solid var(--border2); color: var(--text2); }
   .btn-ghost:hover { background: var(--bg3); color: var(--text); }
   .btn-sm { padding: 6px 14px; font-size: 12px; }
   .status-bar { padding: 10px 14px; border-radius: var(--r); font-size: 13px; margin-top: 16px; }
@@ -69,6 +133,41 @@
   .status-err { background: var(--coral-dim); color: var(--coral); border: 1px solid rgba(248,113,113,.2); }
   .status-info { background: var(--blue-dim); color: var(--blue); border: 1px solid rgba(96,165,250,.2); }
   .status-warn { background: var(--amber-dim); color: var(--amber); border: 1px solid rgba(251,191,36,.2); }
+  .helper-text { font-size: 11px; color: var(--text3); margin-top: 6px; }
+  .section-title { margin-top: 20px; }
+  .inline-row { display: flex; gap: 10px; align-items: center; }
+  .inline-row-top { margin-top: 18px; }
+  .inline-row-tight { margin-top: 14px; }
+  .card-spaced { margin-bottom: 20px; }
+  .muted-note { font-size: 12px; color: var(--text3); }
+  .guide-copy { font-size: 13px; color: var(--text2); margin-bottom: 14px; }
+  .guide-summary { cursor: pointer; font-size: 13px; font-weight: 500; color: var(--teal); }
+  .guide-list { font-size: 12px; color: var(--text2); line-height: 2; margin-top: 10px; padding-left: 18px; }
+  .code-block {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: var(--r);
+    padding: 12px;
+    margin-top: 10px;
+    font-size: 11px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    color: var(--text2);
+    white-space: pre-wrap;
+    overflow-x: auto;
+  }
+  .header-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+  .title-reset { margin: 0; }
+  .date-control label { margin: 0 8px 0 0; display: inline; color: var(--text2); font-size: 13px; }
+  .date-control input[type=date] { width: 160px; }
+  .stat-subvalue { font-size: 18px; color: var(--text3); }
+  .util-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+  .util-label { font-size: 11px; color: var(--text3); margin-bottom: 4px; }
+  .util-value { font-size: 11px; color: var(--text2); margin-top: 3px; }
+  .empty-inline { padding: 20px; color: var(--text3); font-size: 13px; }
+  .timeline-empty { color: var(--text3); font-size: 12px; padding: 8px 0; }
+  .booking-procedure { flex: 1; font-size: 13px; }
+  .booking-surgeon { color: var(--text2); font-size: 13px; }
+  .booking-time { color: var(--text2); font-size: 12px; margin-left: 8px; }
 
   /* Preview table */
   .preview-scroll { overflow-x: auto; margin-top: 12px; }
@@ -92,7 +191,14 @@
   .badge-blue { background: var(--blue-dim); color: var(--blue); }
   .badge-green { background: var(--green-dim); color: var(--green); }
   .badge-purple { background: var(--purple-dim); color: var(--purple); }
-  .case-block { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--r2); margin-bottom: 16px; overflow: hidden; }
+  .case-block {
+    background: var(--bg2);
+    border: 1px solid var(--border2);
+    border-radius: var(--r2);
+    margin-bottom: 16px;
+    overflow: hidden;
+    box-shadow: var(--shadow-soft);
+  }
   .case-header { padding: 14px 18px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--border); cursor: pointer; user-select: none; }
   .case-header:hover { background: var(--bg3); }
   .case-id { font-size: 11px; font-weight: 700; color: var(--text2); font-family: monospace; }
@@ -101,9 +207,9 @@
   .chevron { font-size: 14px; color: var(--text3); transition: transform .2s; }
   .case-header.open .chevron { transform: rotate(90deg); }
   .options-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; padding: 14px; }
-  .option-card { border-radius: var(--r); border: 1.5px solid var(--border); background: var(--bg3); padding: 14px; transition: all .15s; position: relative; }
-  .option-card:hover { border-color: var(--border2); }
-  .option-card.best { border-color: rgba(45,212,191,.4); background: linear-gradient(135deg, rgba(45,212,191,.05) 0%, var(--bg3) 100%); }
+  .option-card { border-radius: var(--r); border: 1.5px solid var(--border2); background: var(--bg2); padding: 14px; transition: all .15s; position: relative; }
+  .option-card:hover { border-color: rgba(96,165,250,.35); transform: translateY(-1px); }
+  .option-card.best { border-color: rgba(37,163,217,.45); background: linear-gradient(135deg, rgba(37,163,217,.08) 0%, var(--bg2) 100%); }
   .option-card.selected { border-color: var(--teal); background: var(--teal-dim); }
   .option-card.displaced { opacity: .4; pointer-events: none; }
   .opt-num { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: var(--text3); margin-bottom: 8px; }
@@ -114,37 +220,44 @@
   .select-btn { width: 100%; padding: 7px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; border: none; transition: all .15s; }
   .select-btn.unselected { background: transparent; border: 1px solid var(--border2); color: var(--text2); }
   .select-btn.unselected:hover { background: var(--bg2); color: var(--text); }
-  .select-btn.selected-btn { background: var(--teal); color: #0f1117; }
+  .select-btn.selected-btn { background: var(--teal); color: #fff; }
   .confirmed-banner { background: var(--green-dim); border: 1px solid rgba(74,222,128,.2); color: var(--green); font-size: 12px; font-weight: 600; padding: 8px 14px; border-radius: 6px; margin: 0 14px 14px; text-align: center; }
   .empty-state { text-align: center; padding: 64px 32px; color: var(--text3); font-size: 15px; }
   .empty-icon { font-size: 32px; margin-bottom: 12px; }
 
   /* Dashboard page */
   .dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px; }
-  .metric-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--r2); padding: 20px; }
+  .metric-card {
+    background: var(--bg2);
+    border: 1px solid var(--border2);
+    border-radius: var(--r2);
+    padding: 20px;
+    box-shadow: var(--shadow-soft);
+  }
   .metric-label { font-size: 12px; font-weight: 500; color: var(--text2); margin-bottom: 8px; }
   .metric-value { font-size: 32px; font-weight: 700; font-variant-numeric: tabular-nums; }
   .metric-sub { font-size: 12px; color: var(--text3); margin-top: 4px; }
   .util-bar-wrap { margin-top: 10px; background: var(--bg3); border-radius: 4px; height: 8px; overflow: hidden; }
   .util-bar { height: 100%; border-radius: 4px; transition: width .6s ease; }
-  .or-timeline { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--r2); overflow: hidden; }
+  .or-timeline { background: var(--bg2); border: 1px solid var(--border2); border-radius: var(--r2); overflow: hidden; box-shadow: var(--shadow-soft); }
   .or-timeline-header { padding: 14px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
   .or-timeline-title { font-size: 14px; font-weight: 600; }
   .timeline-container { padding: 16px 20px; overflow-x: auto; }
   .tl-row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
   .tl-row:last-child { margin-bottom: 0; }
   .tl-label { font-size: 12px; font-weight: 500; color: var(--text2); width: 60px; flex-shrink: 0; }
-  .tl-track { flex: 1; height: 36px; background: var(--bg3); border-radius: 6px; position: relative; min-width: 400px; }
+  .tl-track { flex: 1; height: 36px; background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; position: relative; min-width: 400px; }
   .tl-block { position: absolute; top: 4px; bottom: 4px; border-radius: 4px; display: flex; align-items: center; padding: 0 6px; font-size: 10px; font-weight: 600; white-space: nowrap; overflow: hidden; }
-  .tl-block.or1 { background: rgba(45,212,191,.2); color: var(--teal); border: 1px solid rgba(45,212,191,.3); }
+  .tl-block.or1 { background: rgba(37,163,217,.15); color: var(--teal); border: 1px solid rgba(37,163,217,.32); }
   .tl-block.or2 { background: rgba(167,139,250,.2); color: var(--purple); border: 1px solid rgba(167,139,250,.3); }
   .tl-hour { font-size: 10px; color: var(--text3); }
   .tl-hours { display: flex; gap: 0; margin-bottom: 6px; padding-left: 72px; }
   .tl-hour-mark { flex: 1; font-size: 10px; color: var(--text3); text-align: center; }
-  .bookings-list { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--r2); overflow: hidden; margin-top: 20px; }
+  .bookings-list { background: var(--bg2); border: 1px solid var(--border2); border-radius: var(--r2); overflow: hidden; margin-top: 20px; box-shadow: var(--shadow-soft); }
   .bookings-list-header { padding: 14px 20px; border-bottom: 1px solid var(--border); font-size: 14px; font-weight: 600; }
   .booking-row { padding: 12px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; font-size: 13px; }
   .booking-row:last-child { border-bottom: none; }
+  .booking-row:hover { background: rgba(255,255,255,.02); }
   .booking-id { font-size: 11px; font-family: monospace; color: var(--text3); width: 90px; flex-shrink: 0; }
 
   /* Spinner */
@@ -186,7 +299,7 @@
       <input type="password" id="api-key" placeholder="AIza..." />
       <label>Spreadsheet ID</label>
       <input type="text" id="sheet-id" placeholder="1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgVE2upms" />
-      <p style="font-size:11px;color:var(--text3);margin-top:6px;">Found in your Google Sheets URL between /d/ and /edit</p>
+      <p class="helper-text">Found in your Google Sheets URL between /d/ and /edit</p>
       <label>Consult Raw Data Tab Name</label>
       <input type="text" id="tab-consult" value="Consult Raw Data" />
       <label>Procedure Durations Tab Name</label>
@@ -208,7 +321,7 @@
       <input type="text" id="col-surgeon" value="Surgeon" />
       <label>Consult / Booking Date column</label>
       <input type="text" id="col-date" value="Date" />
-      <div class="card-title" style="margin-top:20px;">Column Mapping — Procedure Durations</div>
+      <div class="card-title section-title">Column Mapping — Procedure Durations</div>
       <label>Procedure column</label>
       <input type="text" id="col-proc2" value="Procedure" />
       <label>Duration (minutes) column</label>
@@ -218,12 +331,12 @@
     </div>
   </div>
 
-  <div class="card" style="margin-bottom:20px;">
+  <div class="card card-spaced">
     <div class="card-title">Google Apps Script — Write-back &amp; Email</div>
-    <p style="font-size:13px;color:var(--text2);margin-bottom:14px;">To write confirmed bookings back to your sheet and send email reports, deploy a Google Apps Script Web App. Follow the steps below once, then paste the URL here.</p>
-    <details style="margin-bottom:14px;">
-      <summary style="cursor:pointer;font-size:13px;font-weight:500;color:var(--teal);">How to set up the Apps Script (click to expand)</summary>
-      <ol style="font-size:12px;color:var(--text2);line-height:2;margin-top:10px;padding-left:18px;">
+    <p class="guide-copy">To write confirmed bookings back to your sheet and send email reports, deploy a Google Apps Script Web App. Follow the steps below once, then paste the URL here.</p>
+    <details class="card-spaced">
+      <summary class="guide-summary">How to set up the Apps Script (click to expand)</summary>
+      <ol class="guide-list">
         <li>Open your Google Sheet → <strong>Extensions → Apps Script</strong></li>
         <li>Delete any existing code and paste the Apps Script code below</li>
         <li>Click <strong>Deploy → New deployment</strong></li>
@@ -231,7 +344,7 @@
         <li>Click <strong>Deploy</strong>, authorise when prompted, copy the Web App URL</li>
         <li>Paste the URL in the field below</li>
       </ol>
-      <div style="background:var(--bg3);border-radius:var(--r);padding:12px;margin-top:10px;font-size:11px;font-family:monospace;color:var(--text2);white-space:pre-wrap;overflow-x:auto;">function doPost(e) {
+      <div class="code-block">function doPost(e) {
   try {
     var payload = JSON.parse(e.postData.contents);
 
@@ -275,20 +388,20 @@
     </details>
     <label>Apps Script Web App URL</label>
     <input type="text" id="apps-script-url" placeholder="https://script.google.com/macros/s/.../exec" />
-    <label>Secret Token <span style="font-size:11px;color:var(--text3);font-weight:400;">(set the same value in your Apps Script — acts as a password)</span></label>
+    <label>Secret Token <span class="helper-text">(set the same value in your Apps Script — acts as a password)</span></label>
     <input type="password" id="apps-script-token" placeholder="e.g. my-hospital-or-2026" />
     <label>Scheduler Email Address</label>
     <input type="text" id="scheduler-email" placeholder="scheduler@hospital.com" />
-    <div style="display:flex;gap:10px;margin-top:14px;align-items:center;">
+    <div class="inline-row inline-row-tight">
       <button class="btn btn-primary btn-sm" onclick="sendEmailReport(true)">Send Report Now</button>
-      <span style="font-size:12px;color:var(--text3);">Auto-send is also triggered each time a booking is confirmed.</span>
+      <span class="muted-note">Auto-send is also triggered each time a booking is confirmed.</span>
     </div>
     <div id="writeback-status"></div>
   </div>
 
   <div class="card" id="preview-card" style="display:none;">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
-      <div class="card-title" style="margin:0;">Data Preview</div>
+    <div class="header-row">
+      <div class="card-title title-reset">Data Preview</div>
       <button class="btn btn-primary btn-sm" onclick="runOptimizer()">
         Generate Schedule Recommendations
       </button>
@@ -326,14 +439,14 @@
 
 <!-- ======= DASHBOARD PAGE ======= -->
 <div class="page" id="page-dashboard">
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+  <div class="header-row">
     <div>
       <div class="sched-title">OR Utilization Dashboard</div>
       <div class="sched-subtitle">Live view updates as assistants confirm bookings</div>
     </div>
-    <div>
-      <label style="margin:0;display:inline;color:var(--text2);font-size:13px;margin-right:8px;">View date:</label>
-      <input type="date" id="dash-date" style="width:160px;" onchange="renderDashboard()"/>
+    <div class="date-control">
+      <label>View date:</label>
+      <input type="date" id="dash-date" onchange="renderDashboard()"/>
     </div>
   </div>
   <div class="dash-grid" id="metrics-grid"></div>
@@ -843,22 +956,22 @@ function renderDashboard() {
   const metricsHtml = `
     <div class="metric-card">
       <div class="metric-label">Cases Confirmed</div>
-      <div class="metric-value" style="color:var(--teal)">${totalConfirmed} <span style="font-size:18px;color:var(--text3)">/ ${totalCases}</span></div>
+      <div class="metric-value" style="color:var(--teal)">${totalConfirmed} <span class="stat-subvalue">/ ${totalCases}</span></div>
       <div class="metric-sub">${totalCases - totalConfirmed} pending assistant selection</div>
     </div>
     <div class="metric-card">
       <div class="metric-label">OR Utilization — ${viewDate || 'select date'}</div>
       <div class="metric-value" style="color:${avgUtil > 80 ? 'var(--green)' : avgUtil > 50 ? 'var(--amber)' : 'var(--coral)'}">${avgUtil}%</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;">
+      <div class="util-grid">
         <div>
-          <div style="font-size:11px;color:var(--text3);margin-bottom:4px;">OR 1</div>
+          <div class="util-label">OR 1</div>
           <div class="util-bar-wrap"><div class="util-bar" style="width:${util1}%;background:var(--teal)"></div></div>
-          <div style="font-size:11px;color:var(--text2);margin-top:3px;">${util1}%</div>
+          <div class="util-value">${util1}%</div>
         </div>
         <div>
-          <div style="font-size:11px;color:var(--text3);margin-bottom:4px;">OR 2</div>
+          <div class="util-label">OR 2</div>
           <div class="util-bar-wrap"><div class="util-bar" style="width:${util2}%;background:var(--purple)"></div></div>
-          <div style="font-size:11px;color:var(--text2);margin-top:3px;">${util2}%</div>
+          <div class="util-value">${util2}%</div>
         </div>
       </div>
     </div>
@@ -869,16 +982,16 @@ function renderDashboard() {
   // Bookings list
   let listHtml = '';
   if (!allBookings.length) {
-    listHtml = '<div style="padding:20px;color:var(--text3);font-size:13px;">No confirmed bookings yet.</div>';
+    listHtml = '<div class="empty-inline">No confirmed bookings yet.</div>';
   } else {
     allBookings.forEach(b => {
       listHtml += `<div class="booking-row">
         <span class="booking-id">${b.caseId}</span>
-        <span style="flex:1;font-size:13px;">${b.procedure || ''}</span>
-        <span style="color:var(--text2);font-size:13px;">${b.surgeon || ''}</span>
+        <span class="booking-procedure">${b.procedure || ''}</span>
+        <span class="booking-surgeon">${b.surgeon || ''}</span>
         <span class="badge badge-blue" style="margin:0 8px;">${fmtDate(b.date)}</span>
         <span class="badge badge-purple">OR ${b.room}</span>
-        <span style="color:var(--text2);font-size:12px;margin-left:8px;">${b.startTime}–${b.endTime}</span>
+        <span class="booking-time">${b.startTime}–${b.endTime}</span>
         <span class="badge badge-green">Confirmed</span>
       </div>`;
     });
@@ -912,7 +1025,7 @@ function renderTimeline(dateKey, bookings) {
     });
     rowsHtml += `<div class="tl-row"><div class="tl-label">OR ${r}</div><div class="tl-track">${blocks}</div></div>`;
   }
-  document.getElementById('tl-rows').innerHTML = rowsHtml || '<div style="color:var(--text3);font-size:12px;padding:8px 0;">No bookings for this date. Select a date with confirmed bookings.</div>';
+  document.getElementById('tl-rows').innerHTML = rowsHtml || '<div class="timeline-empty">No bookings for this date. Select a date with confirmed bookings.</div>';
 }
 
 // =================== WRITE-BACK & EMAIL ===================
