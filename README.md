@@ -158,10 +158,10 @@ To update the tool, edit `index.html` in the repository and commit — GitHub Pa
 - Click **Change** on a confirmed booking to reselect
 - Confirming a booking automatically re-optimizes all pending cases and writes to the sheet
 - Send Report Now button allows you to send the email anytime you are done with scheduling.
-      - While sending — the button disables and changes to "Sending…" so they know it's in progress.
-      - On success — the button turns green and shows "✓ Report Sent", then resets back to "Send Report Now" after 3 seconds. A green toast notification also appears next to the button saying "✓ Email report sent to scheduler@hospital.com" and fades out after 5 seconds.
-      - On failure — the button resets immediately and a red toast shows the specific error message for 6 seconds.
-      - If the email isn't configured yet, an amber warning toast prompts them to check the Setup tab.
+      * While sending — the button disables and changes to "Sending…" so they know it's in progress.
+      * On success — the button turns green and shows "✓ Report Sent", then resets back to "Send Report Now" after 3 seconds. A green toast notification also appears next to the button saying "✓ Email report sent to scheduler@hospital.com" and fades out after 5 seconds.
+      * On failure — the button resets immediately and a red toast shows the specific error message for 6 seconds.
+      * If the email isn't configured yet, an amber warning toast prompts them to check the Setup tab.
 
 ### OR Dashboard tab
 - Pick a date to view the OR timeline and utilization for both rooms
