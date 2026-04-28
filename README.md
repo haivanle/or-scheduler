@@ -153,20 +153,19 @@ To update the tool, edit `index.html` in the repository and commit — GitHub Pa
 5. Click **Generate Schedule Recommendations**
 
 ### Schedule tab
-- Each case shows 3 ranked slot options (Option 1 = best recommendation)
-- Click **Select this slot** to confirm a booking
-- Click **Change** on a confirmed booking to reselect
-- Confirming a booking automatically re-optimizes all pending cases and writes to the sheet
-- Send Report Now button allows you to send the email anytime you are done with scheduling.
-
-+ While sending — the button disables and changes to "Sending…" so they know it's in progress.
-+ On success — the button turns green and shows "✓ Report Sent", then resets back to "Send Report Now" after 3 seconds. A green toast notification also appears next to the button saying "✓ Email report sent to scheduler@hospital.com" and fades out after 5 seconds.
-+ On failure — the button resets immediately and a red toast shows the specific error message for 6 seconds.
-+ If the email isn't configured yet, an amber warning toast prompts them to check the Setup tab.
+1. Each case shows 3 ranked slot options (Option 1 = best recommendation)
+2. Click **Select this slot** to confirm a booking
+3. Click **Change** on a confirmed booking to reselect
+4. Confirming a booking automatically re-optimizes all pending cases and writes to the sheet
+5. Send Report Now button allows you to send the email anytime you are done with scheduling.
+- While sending — the button disables and changes to "Sending…" so they know it's in progress.
+- On success — the button turns green and shows "✓ Report Sent", then resets back to "Send Report Now" after 3 seconds. A green toast notification also appears next to the button saying "✓ Email report sent to scheduler@hospital.com" and fades out after 5 seconds.
+- On failure — the button resets immediately and a red toast shows the specific error message for 6 seconds.
+- If the email isn't configured yet, an amber warning toast prompts them to check the Setup tab.
 
 ### OR Dashboard tab
-- Pick a date to view the OR timeline and utilization for both rooms
-- All confirmed bookings are listed at the bottom sorted by surgery date
+1. Pick a date to view the OR timeline and utilization for both rooms
+2. All confirmed bookings are listed at the bottom sorted by surgery date
 
 ---
 
