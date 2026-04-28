@@ -265,6 +265,11 @@
   @keyframes spin { to { transform: rotate(360deg); } }
   .loading-row { display: flex; align-items: center; gap: 10px; padding: 20px; color: var(--text2); font-size: 13px; }
 
+  /* Toast */
+  #email-toast.toast-ok { background: var(--green-dim); color: var(--green); border: 1px solid rgba(21,128,61,.25); }
+  #email-toast.toast-err { background: var(--coral-dim); color: var(--coral); border: 1px solid rgba(220,38,38,.25); }
+  #email-toast.toast-warn { background: var(--amber-dim); color: var(--amber); border: 1px solid rgba(180,83,9,.25); }
+
   @media (max-width: 768px) {
     .config-grid, .dash-grid { grid-template-columns: 1fr; }
     .options-grid { grid-template-columns: 1fr; }
@@ -393,8 +398,7 @@
     <label>Scheduler Email Address</label>
     <input type="text" id="scheduler-email" placeholder="scheduler@hospital.com" />
     <div class="inline-row inline-row-tight">
-      <button class="btn btn-primary btn-sm" onclick="sendEmailReport(true)">Send Report Now</button>
-      <span class="muted-note">Auto-send is also triggered each time a booking is confirmed.</span>
+
     </div>
     <div id="writeback-status"></div>
   </div>
@@ -421,6 +425,8 @@
     <div style="display:flex;gap:10px;align-items:center;">
       <span id="confirmed-count" class="badge badge-green" style="display:none;"></span>
       <button class="btn btn-ghost btn-sm" onclick="runOptimizer()" id="regen-btn" style="display:none;">Regenerate</button>
+      <button class="btn btn-primary btn-sm" onclick="sendEmailReport(true)" id="send-report-btn" style="display:none;">Send Report Now</button>
+      <div id="email-toast" style="display:none;align-items:center;gap:8px;padding:7px 14px;border-radius:8px;font-size:13px;font-weight:500;transition:opacity .4s;"></div>
     </div>
   </div>
   <div class="filter-row">
@@ -828,6 +834,7 @@ function buildAllOptions() {
   sel.innerHTML = '<option value="">All Surgeons</option>';
   surgeons.forEach(s => { sel.innerHTML += `<option value="${s}">${s}</option>`; });
   document.getElementById('regen-btn').style.display = '';
+  document.getElementById('send-report-btn').style.display = '';
   renderSchedule();
 }
 
@@ -914,8 +921,7 @@ function selectOption(caseId, optIdx) {
   buildAllOptions();
   renderDashboard();
   // Auto write-back + email on every confirmation
-  writeBookingsToSheet();
-  sendEmailReport(false); // false = silent (no status banner for auto-send)
+
 }
 
 function unconfirmCase(caseId) {
@@ -1103,28 +1109,54 @@ function buildBookingRows() {
   }).sort((a, b) => a[4] > b[4] ? 1 : -1); // sort by surgery date
 }
 
+function showToast(msg, type, durationMs) {
+  const toast = document.getElementById('email-toast');
+  if (!toast) return;
+  toast.className = 'toast-' + (type||'ok');
+  toast.textContent = msg;
+  toast.style.display = 'flex';
+  toast.style.opacity = '1';
+  clearTimeout(toast._timer);
+  toast._timer = setTimeout(() => {
+    toast.style.opacity = '0';
+    setTimeout(() => { toast.style.display = 'none'; toast.style.opacity = '1'; }, 400);
+  }, durationMs || 4000);
+}
+
 async function sendEmailReport(manual) {
   const email = document.getElementById('scheduler-email').value.trim();
-  const statusEl = document.getElementById('writeback-status');
+  const btn = document.getElementById('send-report-btn');
+
   if (!email) {
-    if (manual) statusEl.innerHTML = '<div class="status-bar status-err" style="margin-top:10px;">Please enter a scheduler email address.</div>';
+    showToast('⚠ Please enter a scheduler email in the Setup tab.', 'warn', 4000);
     return;
   }
   if (!Object.keys(confirmed).length) {
-    if (manual) statusEl.innerHTML = '<div class="status-bar status-warn" style="margin-top:10px;">No confirmed bookings to report yet.</div>';
+    showToast('⚠ No confirmed bookings to report yet.', 'warn', 4000);
     return;
   }
+
+  // Button loading state
+  if (btn) { btn.disabled = true; btn.textContent = 'Sending…'; }
+
   const subject = 'OR Daily Schedule Report — ' + new Date().toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric', year:'numeric' });
   const body = buildEmailHtml();
   try {
     const result = await callAppsScript({ action: 'sendEmail', to: email, subject, body });
     if (result.ok) {
-      if (manual) statusEl.innerHTML = '<div class="status-bar status-ok" style="margin-top:10px;">✓ Email report sent to ' + email + '.</div>';
+      if (btn) { btn.textContent = '✓ Report Sent'; btn.style.background = 'var(--green)'; }
+      showToast('✓ Email report sent to ' + email, 'ok', 5000);
+      // Reset button after 3s
+      setTimeout(() => {
+        if (btn) { btn.disabled = false; btn.textContent = 'Send Report Now'; btn.style.background = ''; }
+      }, 3000);
     } else {
-      if (manual) statusEl.innerHTML = '<div class="status-bar status-err" style="margin-top:10px;">Email error: ' + (result.error||'unknown') + '</div>';
+      if (btn) { btn.disabled = false; btn.textContent = 'Send Report Now'; btn.style.background = ''; }
+      showToast('✗ Email error: ' + (result.error||'unknown'), 'err', 6000);
     }
   } catch(e) {
-    if (manual) statusEl.innerHTML = '<div class="status-bar status-err" style="margin-top:10px;">Email failed: ' + e.message + '</div>';
+    if (btn) { btn.disabled = false; btn.textContent = 'Send Report Now'; btn.style.background = ''; }
+    showToast('✗ Email failed: ' + e.message, 'err', 6000);
   }
 }
 
